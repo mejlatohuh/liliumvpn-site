@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiliumVPN — Цифровая свобода</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808;
+  --white: #f4f2ee;
+  --gray: #1a1a1a;
+  --gray2: #242424;
+  --gray3: #333;
+  --muted: #777;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Golos Text', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  background: rgba(8,8,8,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--border);
+  transition: padding 0.3s;
+}
+
+nav.scrolled { padding: 14px 48px; }
+
+.logo {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.logo span { color: var(--muted); font-weight: 300; }
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--white); }
+
+.nav-cta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-ghost {
+  padding: 9px 20px;
+  border: 0.5px solid var(--border2);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--white);
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover { background: var(--gray); border-color: var(--gray3); }
+
+.btn-white {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--black);
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-white:hover { background: #ddd; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 0.5px solid var(--border2);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  animation: fadeUp 0.8s ease both;
+}
+
+.badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: #e0e0e0;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.hero h1 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(42px, 8vw, 96px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: var(--muted);
+  display: block;
+}
+
+.hero p {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 480px;
+  line-height: 1.6;
+  margin-bottom: 48px;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.btn-big {
+  padding: 16px 36px;
+  border-radius: 8px;
+  font-family: 'Golos Text', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-big-white {
+  background: var(--white);
+  color: var(--black);
+  border: none;
+}
+
+.btn-big-white:hover { background: #ddd; transform: translateY(-2px); }
+
+.btn-big-outline {
+  background: transparent;
+  color: var(--white);
+  border: 0.5px solid var(--border2);
+}
+
+.btn-big-outline:hover { background: var(--gray); border-color: var(--gray3); transform: translateY(-2px); }
+
+.hero-tags {
+  margin-top: 64px;
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+.hero-tag {
+  padding: 8px 20px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-left: 0.5px solid var(--border);
+}
+
+.hero-tag:first-child { border-left: none; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION SHARED ── */
+section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.6;
+  margin-bottom: 64px;
+}
+
+/* ── FEATURES ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.feature-card {
+  padding: 40px 36px;
+  background: var(--black);
+  transition: background 0.25s;
+}
+
+.feature-card:hover { background: var(--gray); }
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 20px;
+  display: block;
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+
+.feature-card h3 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── DEVICES ── */
+.devices-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 0;
+}
+
+.device-card {
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: var(--white);
+}
+
+.device-card:hover {
+  border-color: var(--gray3);
+  background: var(--gray);
+  transform: translateY(-4px);
+}
+
+.device-icon { font-size: 32px; display: block; margin-bottom: 12px; filter: grayscale(1); }
+.device-name { font-size: 13px; color: var(--muted); font-weight: 500; display: block; margin-bottom: 6px; }
+.device-dl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gray3); }
+
+/* ── PRICING ── */
+#pricing { max-width: 1200px; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 0;
+}
+
+.price-card {
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px;
+  position: relative;
+  transition: all 0.25s;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+}
+
+.price-card:hover {
+  border-color: var(--gray3);
+  transform: translateY(-4px);
+}
+
+.price-card.popular {
+  border-color: var(--white);
+  background: var(--gray);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -1px; left: 50%; transform: translateX(-50%);
+  background: var(--white);
+  color: var(--black);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 0 0 8px 8px;
+}
+
+.price-name {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.price-amount {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.price-period { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+
+.price-features {
+  list-style: none;
+  margin-bottom: 32px;
+  flex: 1;
+}
+
+.price-features li {
+  font-size: 14px;
+  color: var(--muted);
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price-features li::before {
+  content: '—';
+  color: var(--gray3);
+  flex-shrink: 0;
+}
+
+.price-features li.highlight { color: var(--white); }
+.price-features li.highlight::before { content: '✓'; color: var(--white); }
+
+.price-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  text-align: center;
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.price-btn-outline {
+  border: 0.5px solid var(--border2);
+  background: transparent;
+  color: var(--white);
+}
+
+.price-btn-outline:hover { background: var(--gray2); }
+
+.price-btn-solid {
+  border: none;
+  background: var(--white);
+  color: var(--black);
+}
+
+.price-btn-solid:hover { background: #ddd; }
+
+/* ── FAQ ── */
+.faq-list { max-width: 760px; }
+
+.faq-item {
+  border-bottom: 0.5px solid var(--border);
+  overflow: hidden;
+}
+
+.faq-q {
+  width: 100%;
+  text-align: left;
+  padding: 24px 0;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-family: 'Golos Text', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.faq-arrow {
+  width: 24px; height: 24px;
+  border: 0.5px solid var(--border2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+  transition: transform 0.3s, background 0.2s;
+  color: var(--muted);
+}
+
+.faq-item.open .faq-arrow { transform: rotate(45deg); background: var(--gray2); }
+
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.faq-item.open .faq-a { max-height: 300px; padding-bottom: 24px; }
+
+/* ── CTA BANNER ── */
+.cta-section {
+  padding: 80px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cta-inner {
+  background: var(--gray);
+  border: 0.5px solid var(--border2);
+  border-radius: 20px;
+  padding: 80px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-inner::before {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cta-inner h2 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-bottom: 16px;
+}
+
+.cta-inner p {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 0.5px solid var(--border);
+  padding: 60px 48px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 60px;
+}
+
+.footer-brand { max-width: 280px; }
+.footer-logo {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.footer-tg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 0.5px solid var(--border2);
+  border-radius: 8px;
+  color: var(--white);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.footer-tg:hover { background: var(--gray); }
+
+.footer-col h4 {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 12px; }
+.footer-col ul a {
+  font-size: 14px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-col ul a:hover { color: var(--white); }
+
+.footer-bottom {
+  border-top: 0.5px solid var(--border);
+  padding-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-bottom p { font-size: 13px; color: var(--muted); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  padding: 24px;
+}
+
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--gray);
+  border: 0.5px solid var(--border2);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  transform: translateY(20px);
+  transition: transform 0.3s;
+  text-align: center;
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-logo {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+
+.modal-sub {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 36px;
+}
+
+.modal-step {
+  background: var(--black);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.modal-num {
+  width: 28px; height: 28px;
+  background: var(--gray2);
+  border: 0.5px solid var(--border2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.modal-step-text { font-size: 14px; line-height: 1.5; color: var(--muted); }
+.modal-step-text strong { color: var(--white); display: block; margin-bottom: 2px; }
+
+.modal-tg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--black);
+  font-family: 'Golos Text', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  margin-top: 24px;
+  transition: all 0.2s;
+}
+
+.modal-tg-btn:hover { background: #ddd; }
+
+.modal-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  background: var(--gray2);
+  border: 0.5px solid var(--border);
+  color: var(--muted);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-close:hover { color: var(--white); background: var(--gray3); }
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ── MOBILE ── */
+@media (max-width: 900px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  section { padding: 80px 20px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr 1fr; }
+  .devices-row { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .cta-inner { padding: 48px 24px; }
+  footer { padding: 40px 20px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+
+@media (max-width: 600px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+  .devices-row { grid-template-columns: repeat(2, 1fr); }
+  .hero-buttons { flex-direction: column; align-items: center; }
+  .modal { padding: 36px 24px; }
+  .nav-cta .btn-ghost { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo">Lilium<span>VPN</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Возможности</a></li>
+    <li><a href="#pricing">Тарифы</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="cabinet.html" class="btn-ghost">Войти</a>
+    <button class="btn-white" onclick="openModal()">Начать</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="badge">Цифровая свобода</div>
+  <h1>Безграничный<em>интернет.</em></h1>
+  <p>Ваша личная цифровая крепость. Быстро, безопасно, без компромиссов.</p>
+  <div class="hero-buttons">
+    <button class="btn-big btn-big-white" onclick="openModal()">
+      Попробовать бесплатно →
+    </button>
+    <a href="#features" class="btn-big btn-big-outline">Узнать больше</a>
+  </div>
+  <div class="hero-tags">
+    <span class="hero-tag">VLESS · Reality</span>
+    <span class="hero-tag">AES-256</span>
+    <span class="hero-tag">No-logs</span>
+    <span class="hero-tag">7 платформ</span>
+    <span class="hero-tag">Kill Switch</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="reveal">
+    <div class="section-label">Почему LiliumVPN</div>
+    <h2 class="section-title">Построено для<br>реальной свободы</h2>
+    <p class="section-sub">Никаких компромиссов в безопасности. Никаких логов. Никаких ограничений.</p>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <h3>VLESS · Reality</h3>
+      <p>Современный протокол для обхода DPI и глубокой инспекции трафика. Незаметный, быстрый, надёжный.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔒</span>
+      <h3>AES-256 шифрование</h3>
+      <p>Военный стандарт шифрования. Ваш трафик нечитаем ни для провайдера, ни для кого-либо ещё.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📊</span>
+      <h3>До 10 Gbit/s</h3>
+      <p>Никаких просадок скорости. Стримьте, скачивайте, работайте — без ожидания и буферизации.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🚫</span>
+      <h3>Ноль логов</h3>
+      <p>Мы не храним историю посещений, IP-адреса или любую другую информацию о вашей активности.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🛡</span>
+      <h3>Kill Switch</h3>
+      <p>Интернет обрывается автоматически при падении VPN. Ни одного байта мимо защищённого туннеля.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⚙️</span>
+      <h3>Split Tunneling</h3>
+      <p>Выбирайте, какие приложения идут через VPN, а какие — напрямую. Полный контроль над трафиком.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DEVICES -->
+<section>
+  <div class="reveal">
+    <div class="section-label">Совместимость</div>
+    <h2 class="section-title">Работает на<br>всех устройствах</h2>
+    <p class="section-sub">Установка за 2 минуты. Один аккаунт для всех ваших устройств.</p>
+  </div>
+  <div class="devices-row reveal">
+    <a href="#" class="device-card">
+      <span class="device-icon">🪟</span>
+      <span class="device-name">Windows</span>
+      <span class="device-dl">Скачать</span>
+    </a>
+    <a href="#" class="device-card">
+      <span class="device-icon">🍎</span>
+      <span class="device-name">macOS</span>
+      <span class="device-dl">Скачать</span>
+    </a>
+    <a href="#" class="device-card">
+      <span class="device-icon">🐧</span>
+      <span class="device-name">Linux</span>
+      <span class="device-dl">Скачать</span>
+    </a>
+    <a href="#" class="device-card">
+      <span class="device-icon">📱</span>
+      <span class="device-name">iOS</span>
+      <span class="device-dl">Скачать</span>
+    </a>
+    <a href="#" class="device-card">
+      <span class="device-icon">🤖</span>
+      <span class="device-name">Android</span>
+      <span class="device-dl">Скачать</span>
+    </a>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="reveal">
+    <div class="section-label">Тарифы</div>
+    <h2 class="section-title">Прозрачные цены</h2>
+    <p class="section-sub">Без скрытых платежей. Отмените подписку в любой момент.</p>
+  </div>
+  <div class="pricing-grid reveal">
+    <div class="price-card">
+      <div class="price-name">Solo</div>
+      <div class="price-amount">299<span style="font-size:18px;color:var(--muted)"> ₽</span></div>
+      <div class="price-period">в месяц</div>
+      <ul class="price-features">
+        <li class="highlight">300 ГБ/мес</li>
+        <li class="highlight">3 устройства</li>
+        <li>Поддержка 24/7</li>
+        <li>Kill Switch</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-outline" onclick="openModal();return false;">Подключить</a>
+    </div>
+    <div class="price-card popular">
+      <div class="popular-badge">Популярный</div>
+      <div class="price-name">Family</div>
+      <div class="price-amount">599<span style="font-size:18px;color:var(--muted)"> ₽</span></div>
+      <div class="price-period">в месяц</div>
+      <ul class="price-features">
+        <li class="highlight">1000 ГБ/мес</li>
+        <li class="highlight">10 устройств</li>
+        <li class="highlight">Приоритетная поддержка</li>
+        <li class="highlight">Kill Switch</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-solid" onclick="openModal();return false;">Подключить</a>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Unlimited</div>
+      <div class="price-amount">999<span style="font-size:18px;color:var(--muted)"> ₽</span></div>
+      <div class="price-period">в месяц</div>
+      <ul class="price-features">
+        <li class="highlight">∞ Безлимит</li>
+        <li class="highlight">10 устройств</li>
+        <li class="highlight">Приоритетная поддержка</li>
+        <li class="highlight">Kill Switch</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-outline" onclick="openModal();return false;">Подключить</a>
+    </div>
+    <div class="price-card" style="border-style:dashed;border-color:var(--gray3)">
+      <div class="price-name" style="color:var(--white)">Бесплатно</div>
+      <div class="price-amount" style="font-size:28px">Тест</div>
+      <div class="price-period">1 день · 10 ГБ</div>
+      <ul class="price-features">
+        <li class="highlight">10 ГБ трафика</li>
+        <li class="highlight">1 устройство</li>
+        <li>Без карты</li>
+        <li>Через Telegram</li>
+      </ul>
+      <a href="https://t.me/LiliumVPNBot" class="price-btn price-btn-outline">Попробовать</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="reveal">
+    <div class="section-label">Вопросы</div>
+    <h2 class="section-title">Частые вопросы</h2>
+  </div>
+  <div class="faq-list reveal">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Как зарегистрироваться?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Регистрация происходит через Telegram-бот — просто напишите ему /start. Никаких email и паролей. Доступ к личному кабинету открывается автоматически через вашу учётную запись Telegram.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        LiliumVPN хранит логи активности?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Нет. Строгая политика no-logs. Единственная информация — ваш Telegram ID для управления подпиской. Мы не храним историю посещений, IP-адреса или любую другую информацию о вашей активности.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Как происходит оплата?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Оплата производится через бот — пополняете баланс удобным способом и выбираете тариф. Мы поддерживаем банковские карты и другие популярные методы оплаты.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Сколько устройств можно подключить?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Зависит от тарифа: Solo — 3 устройства, Family и Unlimited — до 10 устройств одновременно. Можно использовать на смартфоне, планшете, ПК и ноутбуке.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Есть ли реферальная программа?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Да! Приглашайте друзей по своей ссылке — получайте бонус за каждую их регистрацию. Ваш друг получит скидку на первую подписку. Все детали доступны в боте.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Что если VPN не работает?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Напишите в Telegram-бот — поддержка работает 24/7. Попробуйте переподключиться или перезапустить приложение-клиент.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section reveal">
+  <div class="cta-inner">
+    <h2>Готовы начать?</h2>
+    <p>Попробуйте бесплатно — 1 день и 10 ГБ без карты.</p>
+    <button class="btn-big btn-big-white" onclick="openModal()">Начать через Telegram →</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="footer-logo">LiliumVPN</span>
+      <p>Несокрушимый доступ к интернету. Без цензуры, без границ, без компромиссов.</p>
+      <a href="https://t.me/ProjectLilium" class="footer-tg" target="_blank">
+        ↗ Telegram-канал
+      </a>
+    </div>
+    <div class="footer-col">
+      <h4>Продукт</h4>
+      <ul>
+        <li><a href="#features">Возможности</a></li>
+        <li><a href="#pricing">Тарифы</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="cabinet.html">Личный кабинет</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Поддержка</h4>
+      <ul>
+        <li><a href="https://t.me/LiliumVPNBot" target="_blank">Telegram-бот</a></li>
+        <li><a href="https://t.me/adoqnc" target="_blank">Написать нам</a></li>
+        <li><a href="https://t.me/ProjectLilium" target="_blank">Канал</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Правовая информация</h4>
+      <ul>
+        <li><a href="#">Политика конфиденциальности</a></li>
+        <li><a href="#">Условия использования</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 LiliumVPN. Все права защищены.</p>
+    <p style="color:var(--gray3)">VLESS · Reality · AES-256 · No-logs</p>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-logo">LiliumVPN</div>
+    <div class="modal-sub">Регистрация через Telegram — быстро и без паролей</div>
+    <div class="modal-step">
+      <div class="modal-num">1</div>
+      <div class="modal-step-text">
+        <strong>Откройте Telegram-бот</strong>
+        Нажмите кнопку ниже — бот откроется автоматически
+      </div>
+    </div>
+    <div class="modal-step">
+      <div class="modal-num">2</div>
+      <div class="modal-step-text">
+        <strong>Нажмите /start</strong>
+        Бот создаст ваш аккаунт и активирует пробный период
+      </div>
+    </div>
+    <div class="modal-step">
+      <div class="modal-num">3</div>
+      <div class="modal-step-text">
+        <strong>Войдите в личный кабинет</strong>
+        Используйте тот же Telegram для входа на сайте
+      </div>
+    </div>
+    <a href="https://t.me/LiliumVPNBot" target="_blank" class="modal-tg-btn">
+      ↗ Открыть бот в Telegram
+    </a>
+  </div>
+</div>
+
+<script>
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', scrollY > 40);
+});
+
+// Modal
+function openModal(){ document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function closeModalOutside(e){ if(e.target===document.getElementById('modal')) closeModal(); }
+
+// FAQ
+function toggleFaq(btn){
+  const item = btn.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen) item.classList.add('open');
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
