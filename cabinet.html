@@ -240,7 +240,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:20px 4
 
 <script>
 const BOT_USERNAME = 'LiliumVPNbot';
-const API_URL = 'https://liliumvpn-bot.onrender.com';
+const API_URL = 'http://localhost:8080';
 const BOT_URL = `https://t.me/${BOT_USERNAME}`;
 
 // ── API HELPERS ─────────────────────────────────────────────────
@@ -287,34 +287,38 @@ window.onload = function() {
 // ── LOGIN WITH CODE ───────────────────────────────────────────
 async function loginWithCode() {
   const code = document.getElementById('code-input').value.trim().toUpperCase();
-  if (!code) return;
+  if (!code || code.length < 6) {
+    alert('Введите код из бота'); 
+    return;
+  }
 
   const btn = document.querySelector('.code-btn');
   btn.textContent = 'Проверка...';
   btn.disabled = true;
 
-  const data = await apiGet(`${API_URL}/api/verify?code=${code}`);
-  
-  if (!data || data.error) {
+  try {
+    const res = await fetch(`${API_URL}/api/auth`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({code})
+    });
+    const data = await res.json();
+    
+    if (data.ok) {
+      // Get full user data
+      const userData = await fetch(`${API_URL}/api/user/${data.user.telegram_id}`).then(r => r.json());
+      saveSession(userData);
+      showDashboard(userData);
+    } else {
+      btn.textContent = 'Войти';
+      btn.disabled = false;
+      alert(data.error || 'Неверный или истёкший код. Получите новый в боте командой /code');
+    }
+  } catch(e) {
     btn.textContent = 'Войти';
     btn.disabled = false;
-    alert(data?.error || 'Неверный или истёкший код');
-    return;
+    alert('Ошибка подключения к серверу');
   }
-
-  const userData = await apiGet(`${API_URL}/api/user/${data.telegram_id}`);
-  
-  if (!userData || userData.error) {
-    btn.textContent = 'Войти';
-    btn.disabled = false;
-    alert('Ошибка загрузки данных');
-    return;
-  }
-
-  saveSession(userData);
-  btn.textContent = 'Войти';
-  btn.disabled = false;
-  showDashboard(userData);
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────

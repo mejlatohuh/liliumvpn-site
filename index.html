@@ -7,827 +7,476 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black: #080808;
-  --white: #f4f2ee;
-  --gray: #1a1a1a;
-  --gray2: #242424;
-  --gray3: #333;
-  --muted: #777;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.15);
+:root{
+  --black:#060608;--white:#f2f0ec;--gray:#161618;--gray2:#202024;
+  --gray3:#2e2e34;--muted:#666;--border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Golos Text',sans-serif;
+  background:var(--black);
+  color:var(--white);
+  overflow-x:hidden;
+  cursor:default;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Golos Text', sans-serif;
-  background: var(--black);
-  color: var(--white);
-  overflow-x: hidden;
-  cursor: default;
+/* ── CANVAS BG ── */
+#bg-canvas{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;
 }
 
-/* ── NOISE OVERLAY ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.6;
+/* noise */
+body::after{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:.55;
+}
+
+/* ── CONTENT LAYER ── */
+.site-wrap{position:relative;z-index:2}
+
+/* ── LIQUID GLASS MIXIN ── */
+.glass{
+  background:rgba(255,255,255,0.055);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border:0.5px solid rgba(255,255,255,0.13);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 8px 32px rgba(0,0,0,0.35);
 }
 
 /* ── NAV ── */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 48px;
-  background: rgba(8,8,8,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 0.5px solid var(--border);
-  transition: padding 0.3s;
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:rgba(6,6,8,0.7);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:0.5px solid var(--border);
+  transition:padding .3s;
+}
+nav.scrolled{padding:12px 48px}
+.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--white)}
+.nav-logo img{width:34px;height:34px;object-fit:contain;border-radius:8px;filter:brightness(0.95)}
+.nav-logo-text{font-family:'Unbounded',sans-serif;font-weight:700;font-size:17px;letter-spacing:-0.03em}
+.nav-logo-text span{color:var(--muted);font-weight:300}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:500;letter-spacing:.02em;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{display:flex;gap:10px;align-items:center}
+
+/* ── LIQUID GLASS BUTTONS ── */
+.btn-glass{
+  position:relative;overflow:hidden;
+  padding:9px 22px;border-radius:100px;
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(16px) saturate(1.3);
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:0.5px solid rgba(255,255,255,0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 -1px 0 rgba(0,0,0,0.12),
+    0 4px 16px rgba(0,0,0,0.25);
+  color:var(--white);font-family:'Golos Text',sans-serif;
+  font-size:14px;font-weight:500;cursor:pointer;
+  text-decoration:none;transition:all .22s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn-glass::before{
+  content:'';position:absolute;top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+  transition:left .4s;
+}
+.btn-glass:hover::before{left:100%}
+.btn-glass:hover{
+  background:rgba(255,255,255,0.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.22),inset 0 -1px 0 rgba(0,0,0,0.1),0 6px 24px rgba(0,0,0,0.3);
+  transform:translateY(-1px);
+}
+.btn-glass:active{transform:translateY(0) scale(.98)}
+
+.btn-glass-white{
+  background:rgba(242,240,236,0.92);
+  color:var(--black);
+  border-color:rgba(255,255,255,0.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),inset 0 -1px 0 rgba(0,0,0,0.05),0 4px 20px rgba(0,0,0,0.3);
+  font-weight:600;
+}
+.btn-glass-white:hover{background:rgba(255,255,255,0.96);color:var(--black)}
+
+.btn-glass-big{
+  padding:15px 38px;border-radius:100px;
+  font-size:15px;font-weight:600;
 }
 
-nav.scrolled { padding: 14px 48px; }
-
-.logo {
-  font-family: 'Unbounded', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.03em;
-  color: var(--white);
-  text-decoration: none;
+/* mobile nav fix */
+@media(max-width:700px){
+  nav{padding:14px 18px !important}
+  .nav-links{display:none}
+  .btn-glass.nav-login-mobile{display:inline-flex !important}
 }
-
-.logo span { color: var(--muted); font-weight: 300; }
-
-.nav-links {
-  display: flex;
-  gap: 36px;
-  list-style: none;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover { color: var(--white); }
-
-.nav-cta {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.btn-ghost {
-  padding: 9px 20px;
-  border: 0.5px solid var(--border2);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--white);
-  font-family: 'Golos Text', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.btn-ghost:hover { background: var(--gray); border-color: var(--gray3); }
-
-.btn-white {
-  padding: 9px 20px;
-  border: none;
-  border-radius: 6px;
-  background: var(--white);
-  color: var(--black);
-  font-family: 'Golos Text', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.btn-white:hover { background: #ddd; }
+.nav-login-mobile{display:none}
 
 /* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 120px 24px 80px;
-  position: relative;
-  overflow: hidden;
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:120px 24px 80px;
+  position:relative;overflow:hidden;
 }
 
-.hero-grid {
-  position: absolute;
-  inset: 0;
+.hero-grid{
+  position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+    linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 30%,transparent 100%);
 }
 
-.hero-glow {
-  position: absolute;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
-  border-radius: 50%;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 18px;border-radius:100px;
+  font-size:12px;color:rgba(255,255,255,0.6);
+  letter-spacing:.09em;text-transform:uppercase;
+  margin-bottom:32px;
+  animation:fadeUp .8s ease both;
+  background:rgba(255,255,255,0.055);
+  backdrop-filter:blur(16px);
+  border:0.5px solid rgba(255,255,255,0.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),0 4px 12px rgba(0,0,0,0.2);
+}
+.badge-dot{width:6px;height:6px;background:#c8c8c8;border-radius:50%;animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+
+.hero h1{
+  font-family:'Unbounded',sans-serif;
+  font-size:clamp(44px,8.5vw,100px);
+  font-weight:900;line-height:.93;
+  letter-spacing:-0.045em;margin-bottom:28px;
+  animation:fadeUp .8s .1s ease both;
+}
+.hero h1 em{font-style:normal;color:var(--muted);display:block}
+
+.hero p{
+  font-size:18px;color:var(--muted);max-width:460px;
+  line-height:1.65;margin-bottom:48px;
+  animation:fadeUp .8s .2s ease both;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border: 0.5px solid var(--border2);
-  border-radius: 100px;
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 32px;
-  animation: fadeUp 0.8s ease both;
+.hero-buttons{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .8s .3s ease both;
 }
 
-.badge::before {
-  content: '';
-  width: 6px; height: 6px;
-  background: #e0e0e0;
-  border-radius: 50%;
-  animation: pulse 2s infinite;
+.hero-tags{
+  margin-top:64px;display:flex;flex-wrap:wrap;
+  justify-content:center;animation:fadeUp .8s .4s ease both;
 }
-
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
+.hero-tag{
+  padding:8px 22px;font-size:11px;color:var(--muted);
+  letter-spacing:.07em;text-transform:uppercase;
+  border-left:0.5px solid var(--border);
 }
+.hero-tag:first-child{border-left:none}
 
-.hero h1 {
-  font-family: 'Unbounded', sans-serif;
-  font-size: clamp(42px, 8vw, 96px);
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  margin-bottom: 28px;
-  animation: fadeUp 0.8s 0.1s ease both;
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* ── SECTIONS ── */
+section{padding:120px 48px;max-width:1200px;margin:0 auto}
+.section-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.section-title{
+  font-family:'Unbounded',sans-serif;
+  font-size:clamp(28px,4vw,54px);font-weight:700;
+  line-height:1.02;letter-spacing:-0.035em;margin-bottom:16px;
 }
-
-.hero h1 em {
-  font-style: normal;
-  color: var(--muted);
-  display: block;
-}
-
-.hero p {
-  font-size: 18px;
-  color: var(--muted);
-  max-width: 480px;
-  line-height: 1.6;
-  margin-bottom: 48px;
-  animation: fadeUp 0.8s 0.2s ease both;
-}
-
-.hero-buttons {
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-  flex-wrap: wrap;
-  animation: fadeUp 0.8s 0.3s ease both;
-}
-
-.btn-big {
-  padding: 16px 36px;
-  border-radius: 8px;
-  font-family: 'Golos Text', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.25s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-big-white {
-  background: var(--white);
-  color: var(--black);
-  border: none;
-}
-
-.btn-big-white:hover { background: #ddd; transform: translateY(-2px); }
-
-.btn-big-outline {
-  background: transparent;
-  color: var(--white);
-  border: 0.5px solid var(--border2);
-}
-
-.btn-big-outline:hover { background: var(--gray); border-color: var(--gray3); transform: translateY(-2px); }
-
-.hero-tags {
-  margin-top: 64px;
-  display: flex;
-  gap: 0;
-  flex-wrap: wrap;
-  justify-content: center;
-  animation: fadeUp 0.8s 0.4s ease both;
-}
-
-.hero-tag {
-  padding: 8px 20px;
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-left: 0.5px solid var(--border);
-}
-
-.hero-tag:first-child { border-left: none; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── SECTION SHARED ── */
-section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
-
-.section-label {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-
-.section-title {
-  font-family: 'Unbounded', sans-serif;
-  font-size: clamp(28px, 4vw, 52px);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  margin-bottom: 16px;
-}
-
-.section-sub {
-  font-size: 16px;
-  color: var(--muted);
-  max-width: 520px;
-  line-height: 1.6;
-  margin-bottom: 64px;
-}
+.section-sub{font-size:16px;color:var(--muted);max-width:500px;line-height:1.65;margin-bottom:64px}
 
 /* ── FEATURES ── */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 0.5px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:0.5px solid var(--border);border-radius:18px;overflow:hidden;
 }
-
-.feature-card {
-  padding: 40px 36px;
-  background: var(--black);
-  transition: background 0.25s;
+.feature-card{
+  padding:40px 34px;background:rgba(6,6,8,0.85);
+  backdrop-filter:blur(8px);transition:background .25s;
 }
-
-.feature-card:hover { background: var(--gray); }
-
-.feature-icon {
-  font-size: 28px;
-  margin-bottom: 20px;
-  display: block;
-  filter: grayscale(1);
-  opacity: 0.7;
+.feature-card:hover{background:rgba(22,22,24,0.9)}
+.feature-icon{font-size:26px;margin-bottom:18px;display:block;filter:grayscale(1);opacity:.65}
+.feature-card h3{
+  font-family:'Unbounded',sans-serif;font-size:14px;
+  font-weight:700;letter-spacing:-.02em;margin-bottom:10px;
 }
+.feature-card p{font-size:14px;color:var(--muted);line-height:1.65}
 
-.feature-card h3 {
-  font-family: 'Unbounded', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 10px;
+/* ── DEVICES (redesigned - horizontal minimal bar) ── */
+.devices-bar{
+  border:0.5px solid var(--border);border-radius:14px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.025);
+  backdrop-filter:blur(12px);
+  display:flex;
 }
-
-.feature-card p {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.6;
+.device-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:28px 16px;
+  border-right:0.5px solid var(--border);
+  text-decoration:none;color:var(--white);
+  transition:all .2s;
+  gap:14px;
 }
-
-/* ── DEVICES ── */
-.devices-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-top: 0;
-}
-
-.device-card {
-  border: 0.5px solid var(--border);
-  border-radius: 12px;
-  padding: 28px 20px;
-  text-align: center;
-  transition: all 0.2s;
-  cursor: pointer;
-  text-decoration: none;
-  display: block;
-  color: var(--white);
-}
-
-.device-card:hover {
-  border-color: var(--gray3);
-  background: var(--gray);
-  transform: translateY(-4px);
-}
-
-.device-icon { font-size: 32px; display: block; margin-bottom: 12px; filter: grayscale(1); }
-.device-name { font-size: 13px; color: var(--muted); font-weight: 500; display: block; margin-bottom: 6px; }
-.device-dl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gray3); }
+.device-item:last-child{border-right:none}
+.device-item:hover{background:rgba(255,255,255,0.05)}
+.device-item:hover .d-icon{opacity:1}
+.device-item:hover .d-name{color:var(--white)}
+.d-icon{opacity:.5;transition:opacity .2s;display:flex;align-items:center;justify-content:center}
+.d-icon svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.d-name{font-size:13px;color:var(--muted);transition:color .2s;font-weight:500;letter-spacing:.01em}
+.d-dl{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--gray3);margin-top:2px}
 
 /* ── PRICING ── */
-#pricing { max-width: 1200px; }
-
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-top: 0;
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.price-card{
+  border:0.5px solid var(--border);border-radius:16px;
+  padding:32px 26px;position:relative;
+  transition:all .25s;background:rgba(6,6,8,0.6);
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;
 }
-
-.price-card {
-  border: 0.5px solid var(--border);
-  border-radius: 14px;
-  padding: 32px 28px;
-  position: relative;
-  transition: all 0.25s;
-  background: var(--black);
-  display: flex;
-  flex-direction: column;
+.price-card:hover{border-color:var(--gray3);transform:translateY(-4px)}
+.price-card.popular{border-color:rgba(255,255,255,0.25);background:rgba(22,22,24,0.8)}
+.popular-badge{
+  position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--white);color:var(--black);
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 14px;border-radius:0 0 8px 8px;
 }
-
-.price-card:hover {
-  border-color: var(--gray3);
-  transform: translateY(-4px);
+.price-name{
+  font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:22px;
 }
-
-.price-card.popular {
-  border-color: var(--white);
-  background: var(--gray);
+.price-amount{
+  font-family:'Unbounded',sans-serif;font-size:38px;font-weight:900;
+  letter-spacing:-0.04em;line-height:1;margin-bottom:6px;
 }
-
-.popular-badge {
-  position: absolute;
-  top: -1px; left: 50%; transform: translateX(-50%);
-  background: var(--white);
-  color: var(--black);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 4px 14px;
-  border-radius: 0 0 8px 8px;
+.price-period{font-size:13px;color:var(--muted);margin-bottom:26px}
+.price-features{list-style:none;margin-bottom:28px;flex:1}
+.price-features li{
+  font-size:13px;color:var(--muted);padding:8px 0;
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;gap:8px;
 }
-
-.price-name {
-  font-family: 'Unbounded', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 24px;
+.price-features li::before{content:'—';color:var(--gray3);flex-shrink:0}
+.price-features li.hi{color:var(--white)}
+.price-features li.hi::before{content:'✓';color:rgba(255,255,255,0.6)}
+.price-btn{
+  display:block;width:100%;padding:13px;border-radius:100px;
+  text-align:center;font-family:'Golos Text',sans-serif;
+  font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;
+  transition:all .2s;position:relative;overflow:hidden;
 }
-
-.price-amount {
-  font-family: 'Unbounded', sans-serif;
-  font-size: 40px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  margin-bottom: 6px;
+.price-btn-glass{
+  background:rgba(255,255,255,0.07);
+  border:0.5px solid rgba(255,255,255,0.14);
+  color:var(--white);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+  backdrop-filter:blur(12px);
 }
-
-.price-period { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
-
-.price-features {
-  list-style: none;
-  margin-bottom: 32px;
-  flex: 1;
+.price-btn-glass:hover{background:rgba(255,255,255,0.12);transform:translateY(-1px)}
+.price-btn-solid{
+  background:rgba(242,240,236,0.93);
+  border:0.5px solid rgba(255,255,255,0.35);
+  color:var(--black);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.8),0 4px 16px rgba(0,0,0,0.25);
 }
-
-.price-features li {
-  font-size: 14px;
-  color: var(--muted);
-  padding: 8px 0;
-  border-bottom: 0.5px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.price-features li::before {
-  content: '—';
-  color: var(--gray3);
-  flex-shrink: 0;
-}
-
-.price-features li.highlight { color: var(--white); }
-.price-features li.highlight::before { content: '✓'; color: var(--white); }
-
-.price-btn {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  text-align: center;
-  font-family: 'Golos Text', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.price-btn-outline {
-  border: 0.5px solid var(--border2);
-  background: transparent;
-  color: var(--white);
-}
-
-.price-btn-outline:hover { background: var(--gray2); }
-
-.price-btn-solid {
-  border: none;
-  background: var(--white);
-  color: var(--black);
-}
-
-.price-btn-solid:hover { background: #ddd; }
+.price-btn-solid:hover{background:#fff}
 
 /* ── FAQ ── */
-.faq-list { max-width: 760px; }
-
-.faq-item {
-  border-bottom: 0.5px solid var(--border);
-  overflow: hidden;
+.faq-list{max-width:740px}
+.faq-item{border-bottom:0.5px solid var(--border)}
+.faq-q{
+  width:100%;text-align:left;padding:22px 0;
+  background:none;border:none;color:var(--white);
+  font-family:'Golos Text',sans-serif;font-size:16px;font-weight:500;
+  cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;
 }
-
-.faq-q {
-  width: 100%;
-  text-align: left;
-  padding: 24px 0;
-  background: none;
-  border: none;
-  color: var(--white);
-  font-family: 'Golos Text', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
+.faq-arrow{
+  width:24px;height:24px;border:0.5px solid var(--border2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:16px;transition:transform .3s,background .2s;color:var(--muted);
 }
-
-.faq-arrow {
-  width: 24px; height: 24px;
-  border: 0.5px solid var(--border2);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  font-size: 14px;
-  transition: transform 0.3s, background 0.2s;
-  color: var(--muted);
+.faq-item.open .faq-arrow{transform:rotate(45deg);background:var(--gray2)}
+.faq-a{
+  max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;
+  font-size:15px;color:var(--muted);line-height:1.7;
 }
+.faq-item.open .faq-a{max-height:320px;padding-bottom:22px}
 
-.faq-item.open .faq-arrow { transform: rotate(45deg); background: var(--gray2); }
-
-.faq-a {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.3s;
-  font-size: 15px;
-  color: var(--muted);
-  line-height: 1.7;
+/* ── CTA ── */
+.cta-section{padding:60px 48px;max-width:1200px;margin:0 auto}
+.cta-inner{
+  border-radius:22px;padding:80px 60px;text-align:center;position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(24px);
+  border:0.5px solid rgba(255,255,255,0.1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 24px 64px rgba(0,0,0,0.4);
 }
-
-.faq-item.open .faq-a { max-height: 300px; padding-bottom: 24px; }
-
-/* ── CTA BANNER ── */
-.cta-section {
-  padding: 80px 48px;
-  max-width: 1200px;
-  margin: 0 auto;
+.cta-inner::before{
+  content:'';position:absolute;width:500px;height:500px;
+  background:radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 70%);
+  border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
 }
-
-.cta-inner {
-  background: var(--gray);
-  border: 0.5px solid var(--border2);
-  border-radius: 20px;
-  padding: 80px 60px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+.cta-inner h2{
+  font-family:'Unbounded',sans-serif;font-size:clamp(28px,4vw,52px);
+  font-weight:900;letter-spacing:-0.04em;margin-bottom:14px;
 }
-
-.cta-inner::before {
-  content: '';
-  position: absolute;
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-  border-radius: 50%;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.cta-inner h2 {
-  font-family: 'Unbounded', sans-serif;
-  font-size: clamp(28px, 4vw, 52px);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  margin-bottom: 16px;
-}
-
-.cta-inner p {
-  font-size: 16px;
-  color: var(--muted);
-  margin-bottom: 40px;
-}
+.cta-inner p{font-size:16px;color:var(--muted);margin-bottom:38px}
 
 /* ── FOOTER ── */
-footer {
-  border-top: 0.5px solid var(--border);
-  padding: 60px 48px 40px;
-  max-width: 1200px;
-  margin: 0 auto;
+footer{border-top:0.5px solid var(--border);padding:60px 48px 40px;max-width:1200px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:56px}
+.footer-brand{max-width:280px}
+.footer-logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.footer-logo-img{width:30px;height:30px;object-fit:contain;border-radius:6px}
+.footer-logo-text{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.03em}
+.footer-brand p{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:22px}
+.footer-tg{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 18px;border:0.5px solid var(--border2);border-radius:100px;
+  color:var(--white);text-decoration:none;font-size:13px;font-weight:500;
+  background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
+  transition:all .2s;
 }
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 48px;
-  margin-bottom: 60px;
-}
-
-.footer-brand { max-width: 280px; }
-.footer-logo {
-  font-family: 'Unbounded', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  margin-bottom: 16px;
-  display: block;
-}
-
-.footer-brand p {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
-
-.footer-tg {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: 0.5px solid var(--border2);
-  border-radius: 8px;
-  color: var(--white);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.footer-tg:hover { background: var(--gray); }
-
-.footer-col h4 {
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-
-.footer-col ul { list-style: none; }
-.footer-col ul li { margin-bottom: 12px; }
-.footer-col ul a {
-  font-size: 14px;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.footer-col ul a:hover { color: var(--white); }
-
-.footer-bottom {
-  border-top: 0.5px solid var(--border);
-  padding-top: 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-bottom p { font-size: 13px; color: var(--muted); }
+.footer-tg:hover{background:rgba(255,255,255,0.09)}
+.footer-col h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:11px}
+.footer-col ul a{font-size:14px;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-col ul a:hover{color:var(--white)}
+.footer-bottom{border-top:0.5px solid var(--border);padding-top:28px;display:flex;justify-content:space-between;align-items:center}
+.footer-bottom p{font-size:13px;color:var(--muted)}
 
 /* ── MODAL ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-  padding: 24px;
+.modal-overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;padding:24px;
 }
-
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-
-.modal {
-  background: var(--gray);
-  border: 0.5px solid var(--border2);
-  border-radius: 20px;
-  padding: 48px 40px;
-  width: 100%;
-  max-width: 420px;
-  transform: translateY(20px);
-  transition: transform 0.3s;
-  text-align: center;
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:rgba(20,20,22,0.85);
+  backdrop-filter:blur(32px);
+  border:0.5px solid rgba(255,255,255,0.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 32px 80px rgba(0,0,0,0.6);
+  border-radius:22px;padding:48px 40px;width:100%;max-width:420px;
+  transform:translateY(18px);transition:transform .3s;text-align:center;position:relative;
 }
-
-.modal-overlay.open .modal { transform: translateY(0); }
-
-.modal-logo {
-  font-family: 'Unbounded', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  margin-bottom: 8px;
+.modal-overlay.open .modal{transform:none}
+.modal-logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.modal-logo-img{width:36px;height:36px;object-fit:contain;border-radius:9px}
+.modal-logo-text{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.03em}
+.modal-sub{font-size:14px;color:var(--muted);margin-bottom:32px}
+.modal-step{
+  background:rgba(0,0,0,0.35);border:0.5px solid var(--border);
+  border-radius:12px;padding:18px;margin-bottom:10px;
+  text-align:left;display:flex;align-items:flex-start;gap:12px;
 }
-
-.modal-sub {
-  font-size: 14px;
-  color: var(--muted);
-  margin-bottom: 36px;
+.modal-num{
+  width:26px;height:26px;background:rgba(255,255,255,0.07);
+  border:0.5px solid var(--border2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;flex-shrink:0;color:var(--white);
 }
-
-.modal-step {
-  background: var(--black);
-  border: 0.5px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 12px;
-  text-align: left;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
+.modal-step-text{font-size:13px;color:var(--muted);line-height:1.5}
+.modal-step-text strong{color:var(--white);display:block;margin-bottom:2px}
+.modal-tg-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:15px;border-radius:100px;
+  background:rgba(242,240,236,0.93);color:var(--black);
+  font-family:'Golos Text',sans-serif;font-size:15px;font-weight:700;
+  cursor:pointer;border:0.5px solid rgba(255,255,255,0.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.8),0 4px 20px rgba(0,0,0,0.3);
+  text-decoration:none;margin-top:22px;transition:all .2s;
 }
-
-.modal-num {
-  width: 28px; height: 28px;
-  background: var(--gray2);
-  border: 0.5px solid var(--border2);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 600;
-  flex-shrink: 0;
+.modal-tg-btn:hover{background:#fff}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:rgba(255,255,255,0.06);border:0.5px solid var(--border);
+  color:var(--muted);width:30px;height:30px;border-radius:50%;
+  cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
 }
+.modal-close:hover{color:var(--white);background:rgba(255,255,255,0.1)}
 
-.modal-step-text { font-size: 14px; line-height: 1.5; color: var(--muted); }
-.modal-step-text strong { color: var(--white); display: block; margin-bottom: 2px; }
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
 
-.modal-tg-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 16px;
-  border-radius: 10px;
-  background: var(--white);
-  color: var(--black);
-  font-family: 'Golos Text', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  margin-top: 24px;
-  transition: all 0.2s;
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:16px 20px}
+  section{padding:80px 20px}
+  .features-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr 1fr}
+  .devices-bar{flex-wrap:wrap}
+  .device-item{flex:0 0 33.33%;border-bottom:0.5px solid var(--border)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .cta-inner{padding:48px 24px}
+  footer{padding:40px 20px}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
 }
-
-.modal-tg-btn:hover { background: #ddd; }
-
-.modal-close {
-  position: absolute;
-  top: 20px; right: 20px;
-  background: var(--gray2);
-  border: 0.5px solid var(--border);
-  color: var(--muted);
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-}
-
-.modal-close:hover { color: var(--white); background: var(--gray3); }
-
-/* ── SCROLL ANIMATIONS ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-
-.reveal.visible { opacity: 1; transform: none; }
-
-/* ── MOBILE ── */
-@media (max-width: 900px) {
-  nav { padding: 16px 20px; }
-  .nav-links { display: none; }
-  section { padding: 80px 20px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .pricing-grid { grid-template-columns: 1fr 1fr; }
-  .devices-row { grid-template-columns: repeat(3, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .cta-inner { padding: 48px 24px; }
-  footer { padding: 40px 20px; }
-  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
-}
-
-@media (max-width: 600px) {
-  .pricing-grid { grid-template-columns: 1fr; }
-  .devices-row { grid-template-columns: repeat(2, 1fr); }
-  .hero-buttons { flex-direction: column; align-items: center; }
-  .modal { padding: 36px 24px; }
-  .nav-cta .btn-ghost { display: none; }
+@media(max-width:600px){
+  .pricing-grid{grid-template-columns:1fr}
+  .device-item{flex:0 0 50%}
+  .hero-buttons{flex-direction:column;align-items:center}
+  .modal{padding:36px 22px}
 }
 </style>
 </head>
 <body>
 
+<canvas id="bg-canvas"></canvas>
+
+<div class="site-wrap">
+
 <!-- NAV -->
 <nav id="nav">
-  <a href="#" class="logo">Lilium<span>VPN</span></a>
+  <a href="#" class="nav-logo">
+    <img src="logo.jpg" alt="LiliumVPN">
+    <div class="nav-logo-text">Lilium<span>VPN</span></div>
+  </a>
   <ul class="nav-links">
     <li><a href="#features">Возможности</a></li>
     <li><a href="#pricing">Тарифы</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-cta">
-    <a href="cabinet.html" class="btn-ghost">Войти</a>
-    <button class="btn-white" onclick="openModal()">Начать</button>
+    <a href="cabinet.html" class="btn-glass">Войти</a>
+    <a href="cabinet.html" class="btn-glass nav-login-mobile">Войти</a>
+    <button class="btn-glass btn-glass-white" onclick="openModal()">Начать</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
   <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
-  <div class="badge">Цифровая свобода</div>
+  <div class="badge"><span class="badge-dot"></span>LiliumVPN · Цифровая свобода</div>
   <h1>Безграничный<em>интернет.</em></h1>
-  <p>Ваша личная цифровая крепость. Быстро, безопасно, без компромиссов.</p>
+  <p>Ваша личная цифровая крепость. Быстро, безопасно, без компромиссов — на любом устройстве.</p>
   <div class="hero-buttons">
-    <button class="btn-big btn-big-white" onclick="openModal()">
-      Попробовать бесплатно →
-    </button>
-    <a href="#features" class="btn-big btn-big-outline">Узнать больше</a>
+    <button class="btn-glass btn-glass-white btn-glass-big" onclick="openModal()">Попробовать бесплатно →</button>
+    <a href="#features" class="btn-glass btn-glass-big">Узнать больше</a>
   </div>
   <div class="hero-tags">
     <span class="hero-tag">VLESS · Reality</span>
@@ -846,36 +495,12 @@ footer {
     <p class="section-sub">Никаких компромиссов в безопасности. Никаких логов. Никаких ограничений.</p>
   </div>
   <div class="features-grid reveal">
-    <div class="feature-card">
-      <span class="feature-icon">⚡</span>
-      <h3>VLESS · Reality</h3>
-      <p>Современный протокол для обхода DPI и глубокой инспекции трафика. Незаметный, быстрый, надёжный.</p>
-    </div>
-    <div class="feature-card">
-      <span class="feature-icon">🔒</span>
-      <h3>AES-256 шифрование</h3>
-      <p>Военный стандарт шифрования. Ваш трафик нечитаем ни для провайдера, ни для кого-либо ещё.</p>
-    </div>
-    <div class="feature-card">
-      <span class="feature-icon">📊</span>
-      <h3>До 10 Gbit/s</h3>
-      <p>Никаких просадок скорости. Стримьте, скачивайте, работайте — без ожидания и буферизации.</p>
-    </div>
-    <div class="feature-card">
-      <span class="feature-icon">🚫</span>
-      <h3>Ноль логов</h3>
-      <p>Мы не храним историю посещений, IP-адреса или любую другую информацию о вашей активности.</p>
-    </div>
-    <div class="feature-card">
-      <span class="feature-icon">🛡</span>
-      <h3>Kill Switch</h3>
-      <p>Интернет обрывается автоматически при падении VPN. Ни одного байта мимо защищённого туннеля.</p>
-    </div>
-    <div class="feature-card">
-      <span class="feature-icon">⚙️</span>
-      <h3>Split Tunneling</h3>
-      <p>Выбирайте, какие приложения идут через VPN, а какие — напрямую. Полный контроль над трафиком.</p>
-    </div>
+    <div class="feature-card"><span class="feature-icon">⚡</span><h3>VLESS · Reality</h3><p>Современный протокол для обхода DPI. Незаметный, быстрый, надёжный.</p></div>
+    <div class="feature-card"><span class="feature-icon">🔒</span><h3>AES-256</h3><p>Военный стандарт шифрования. Ваш трафик нечитаем ни для кого.</p></div>
+    <div class="feature-card"><span class="feature-icon">📊</span><h3>До 10 Gbit/s</h3><p>Никаких просадок скорости. Стримьте, скачивайте, работайте.</p></div>
+    <div class="feature-card"><span class="feature-icon">🚫</span><h3>Ноль логов</h3><p>Мы не храним историю посещений, IP-адреса или любую другую информацию.</p></div>
+    <div class="feature-card"><span class="feature-icon">🛡</span><h3>Kill Switch</h3><p>Интернет обрывается при падении VPN. Ни одного байта мимо туннеля.</p></div>
+    <div class="feature-card"><span class="feature-icon">⚙️</span><h3>Split Tunneling</h3><p>Выбирайте какие приложения идут через VPN. Полный контроль.</p></div>
   </div>
 </section>
 
@@ -886,31 +511,34 @@ footer {
     <h2 class="section-title">Работает на<br>всех устройствах</h2>
     <p class="section-sub">Установка за 2 минуты. Один аккаунт для всех ваших устройств.</p>
   </div>
-  <div class="devices-row reveal">
-    <a href="#" class="device-card">
-      <span class="device-icon">🪟</span>
-      <span class="device-name">Windows</span>
-      <span class="device-dl">Скачать</span>
+  <div class="devices-bar reveal">
+    <a href="#" class="device-item">
+      <div class="d-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="13" rx="1"/><path d="M3 16h18M8 20h8M10 16v4M14 16v4"/></svg></div>
+      <span class="d-name">Windows</span><span class="d-dl">СКАЧАТЬ</span>
     </a>
-    <a href="#" class="device-card">
-      <span class="device-icon">🍎</span>
-      <span class="device-name">macOS</span>
-      <span class="device-dl">Скачать</span>
+    <a href="#" class="device-item">
+      <div class="d-icon"><svg viewBox="0 0 24 24"><path d="M12 3c-1.5 0-3 .5-4 1.5C6.5 5.5 6 7 6 8.5c0 1 .3 2 .8 2.7C5.7 12.5 5 14 5 16c0 2.5 1.5 4.5 3.5 5.5.5.3 1 .5 1.5.5h4c.5 0 1-.2 1.5-.5C17.5 20.5 19 18.5 19 16c0-2-.7-3.5-1.8-4.8.5-.7.8-1.7.8-2.7 0-1.5-.5-3-1.5-4C15.5 3.5 14 3 12 3z"/><path d="M15 3.5c.5-1 1.2-1.8 1.5-2"/></svg></div>
+      <span class="d-name">macOS</span><span class="d-dl">СКАЧАТЬ</span>
     </a>
-    <a href="#" class="device-card">
-      <span class="device-icon">🐧</span>
-      <span class="device-name">Linux</span>
-      <span class="device-dl">Скачать</span>
+    <a href="#" class="device-item">
+      <div class="d-icon"><svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.5 3.5 10.7 8 12 4.5-1.3 8-6.5 8-12V6l-8-4z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/><path d="M7 8l2-3M17 8l-2-3"/></svg></div>
+      <span class="d-name">Linux</span><span class="d-dl">СКАЧАТЬ</span>
     </a>
-    <a href="#" class="device-card">
-      <span class="device-icon">📱</span>
-      <span class="device-name">iOS</span>
-      <span class="device-dl">Скачать</span>
+    <a href="#" class="device-item">
+      <div class="d-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1"/><path d="M9 6h6M9 9h6M9 12h4"/></svg></div>
+      <span class="d-name">iOS</span><span class="d-dl">СКАЧАТЬ</span>
     </a>
-    <a href="#" class="device-card">
-      <span class="device-icon">🤖</span>
-      <span class="device-name">Android</span>
-      <span class="device-dl">Скачать</span>
+    <a href="#" class="device-item">
+      <div class="d-icon"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0116 0"/><path d="M6.3 9a8 8 0 0111.4 0"/><circle cx="7" cy="14" r="1.5"/><circle cx="17" cy="14" r="1.5"/><path d="M5 15.5l-2 2M19 15.5l2 2"/></svg></div>
+      <span class="d-name">Android</span><span class="d-dl">СКАЧАТЬ</span>
+    </a>
+    <a href="#" class="device-item">
+      <div class="d-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M8 19v2M16 19v2M5 12h14"/></svg></div>
+      <span class="d-name">Android TV</span><span class="d-dl">СКАЧАТЬ</span>
+    </a>
+    <a href="#" class="device-item" style="border-right:none">
+      <div class="d-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="15" rx="2"/><path d="M8 21h8M12 19v2"/></svg></div>
+      <span class="d-name">Apple TV</span><span class="d-dl">СКАЧАТЬ</span>
     </a>
   </div>
 </section>
@@ -925,52 +553,44 @@ footer {
   <div class="pricing-grid reveal">
     <div class="price-card">
       <div class="price-name">Solo</div>
-      <div class="price-amount">299<span style="font-size:18px;color:var(--muted)"> ₽</span></div>
+      <div class="price-amount">299<span style="font-size:16px;color:var(--muted)"> ₽</span></div>
       <div class="price-period">в месяц</div>
       <ul class="price-features">
-        <li class="highlight">300 ГБ/мес</li>
-        <li class="highlight">3 устройства</li>
-        <li>Поддержка 24/7</li>
-        <li>Kill Switch</li>
+        <li class="hi">300 ГБ/мес</li><li class="hi">3 устройства</li>
+        <li>Поддержка 24/7</li><li>Kill Switch</li>
       </ul>
-      <a href="#" class="price-btn price-btn-outline" onclick="openModal();return false;">Подключить</a>
+      <a href="#" class="price-btn price-btn-glass" onclick="openModal();return false">Подключить</a>
     </div>
     <div class="price-card popular">
       <div class="popular-badge">Популярный</div>
       <div class="price-name">Family</div>
-      <div class="price-amount">599<span style="font-size:18px;color:var(--muted)"> ₽</span></div>
+      <div class="price-amount">599<span style="font-size:16px;color:var(--muted)"> ₽</span></div>
       <div class="price-period">в месяц</div>
       <ul class="price-features">
-        <li class="highlight">1000 ГБ/мес</li>
-        <li class="highlight">10 устройств</li>
-        <li class="highlight">Приоритетная поддержка</li>
-        <li class="highlight">Kill Switch</li>
+        <li class="hi">1000 ГБ/мес</li><li class="hi">10 устройств</li>
+        <li class="hi">Приоритетная поддержка</li><li class="hi">Kill Switch</li>
       </ul>
-      <a href="#" class="price-btn price-btn-solid" onclick="openModal();return false;">Подключить</a>
+      <a href="#" class="price-btn price-btn-solid" onclick="openModal();return false">Подключить</a>
     </div>
     <div class="price-card">
       <div class="price-name">Unlimited</div>
-      <div class="price-amount">999<span style="font-size:18px;color:var(--muted)"> ₽</span></div>
+      <div class="price-amount">999<span style="font-size:16px;color:var(--muted)"> ₽</span></div>
       <div class="price-period">в месяц</div>
       <ul class="price-features">
-        <li class="highlight">∞ Безлимит</li>
-        <li class="highlight">10 устройств</li>
-        <li class="highlight">Приоритетная поддержка</li>
-        <li class="highlight">Kill Switch</li>
+        <li class="hi">∞ Безлимит</li><li class="hi">10 устройств</li>
+        <li class="hi">Приоритетная поддержка</li><li class="hi">Kill Switch</li>
       </ul>
-      <a href="#" class="price-btn price-btn-outline" onclick="openModal();return false;">Подключить</a>
+      <a href="#" class="price-btn price-btn-glass" onclick="openModal();return false">Подключить</a>
     </div>
     <div class="price-card" style="border-style:dashed;border-color:var(--gray3)">
-      <div class="price-name" style="color:var(--white)">Бесплатно</div>
-      <div class="price-amount" style="font-size:28px">Тест</div>
+      <div class="price-name" style="color:var(--white)">Попробовать</div>
+      <div class="price-amount" style="font-size:26px;letter-spacing:-.02em">Бесплатно</div>
       <div class="price-period">1 день · 10 ГБ</div>
       <ul class="price-features">
-        <li class="highlight">10 ГБ трафика</li>
-        <li class="highlight">1 устройство</li>
-        <li>Без карты</li>
-        <li>Через Telegram</li>
+        <li class="hi">10 ГБ трафика</li><li class="hi">1 устройство</li>
+        <li>Без карты</li><li>Через Telegram</li>
       </ul>
-      <a href="https://t.me/LiliumVPNBot" class="price-btn price-btn-outline">Попробовать</a>
+      <a href="https://t.me/LiliumVPNBot" target="_blank" class="price-btn price-btn-glass">Попробовать</a>
     </div>
   </div>
 </section>
@@ -982,48 +602,12 @@ footer {
     <h2 class="section-title">Частые вопросы</h2>
   </div>
   <div class="faq-list reveal">
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Как зарегистрироваться?
-        <span class="faq-arrow">+</span>
-      </button>
-      <div class="faq-a">Регистрация происходит через Telegram-бот — просто напишите ему /start. Никаких email и паролей. Доступ к личному кабинету открывается автоматически через вашу учётную запись Telegram.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        LiliumVPN хранит логи активности?
-        <span class="faq-arrow">+</span>
-      </button>
-      <div class="faq-a">Нет. Строгая политика no-logs. Единственная информация — ваш Telegram ID для управления подпиской. Мы не храним историю посещений, IP-адреса или любую другую информацию о вашей активности.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Как происходит оплата?
-        <span class="faq-arrow">+</span>
-      </button>
-      <div class="faq-a">Оплата производится через бот — пополняете баланс удобным способом и выбираете тариф. Мы поддерживаем банковские карты и другие популярные методы оплаты.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Сколько устройств можно подключить?
-        <span class="faq-arrow">+</span>
-      </button>
-      <div class="faq-a">Зависит от тарифа: Solo — 3 устройства, Family и Unlimited — до 10 устройств одновременно. Можно использовать на смартфоне, планшете, ПК и ноутбуке.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Есть ли реферальная программа?
-        <span class="faq-arrow">+</span>
-      </button>
-      <div class="faq-a">Да! Приглашайте друзей по своей ссылке — получайте бонус за каждую их регистрацию. Ваш друг получит скидку на первую подписку. Все детали доступны в боте.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Что если VPN не работает?
-        <span class="faq-arrow">+</span>
-      </button>
-      <div class="faq-a">Напишите в Telegram-бот — поддержка работает 24/7. Попробуйте переподключиться или перезапустить приложение-клиент.</div>
-    </div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Как зарегистрироваться?<span class="faq-arrow">+</span></button><div class="faq-a">Регистрация через Telegram-бот — напишите /start в @LiliumVPNBot. Никаких email и паролей. Доступ к личному кабинету открывается автоматически.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">LiliumVPN хранит логи?<span class="faq-arrow">+</span></button><div class="faq-a">Нет. Строгая политика no-logs. Единственная информация — ваш Telegram ID для управления подпиской. История посещений, IP-адреса — ничего этого мы не храним.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Как происходит оплата?<span class="faq-arrow">+</span></button><div class="faq-a">Оплата через бот: пополняете баланс удобным способом и выбираете тариф. Поддерживаем банковские карты и популярные методы оплаты.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Сколько устройств можно подключить?<span class="faq-arrow">+</span></button><div class="faq-a">Solo — 3 устройства, Family и Unlimited — до 10 одновременно. Смартфон, планшет, ПК, ноутбук, TV.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Есть реферальная программа?<span class="faq-arrow">+</span></button><div class="faq-a">Да! Приглашайте друзей — получайте бонус за каждую регистрацию. Ваш друг получит скидку на первую подписку. Детали в боте.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Что если VPN не работает?<span class="faq-arrow">+</span></button><div class="faq-a">Напишите в Telegram-бот — поддержка 24/7. Попробуйте переподключиться или перезапустить клиент.</div></div>
   </div>
 </section>
 
@@ -1032,7 +616,7 @@ footer {
   <div class="cta-inner">
     <h2>Готовы начать?</h2>
     <p>Попробуйте бесплатно — 1 день и 10 ГБ без карты.</p>
-    <button class="btn-big btn-big-white" onclick="openModal()">Начать через Telegram →</button>
+    <button class="btn-glass btn-glass-white btn-glass-big" onclick="openModal()">Начать через Telegram →</button>
   </div>
 </div>
 
@@ -1040,36 +624,28 @@ footer {
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <span class="footer-logo">LiliumVPN</span>
-      <p>Несокрушимый доступ к интернету. Без цензуры, без границ, без компромиссов.</p>
-      <a href="https://t.me/ProjectLilium" class="footer-tg" target="_blank">
-        ↗ Telegram-канал
-      </a>
+      <div class="footer-logo-wrap">
+        <img src="logo.jpg" alt="" class="footer-logo-img">
+        <span class="footer-logo-text">LiliumVPN</span>
+      </div>
+      <p>Несокрушимый доступ к интернету. Без цензуры, без границ.</p>
+      <a href="https://t.me/ProjectLilium" class="footer-tg" target="_blank">↗ Telegram-канал</a>
     </div>
-    <div class="footer-col">
-      <h4>Продукт</h4>
-      <ul>
-        <li><a href="#features">Возможности</a></li>
-        <li><a href="#pricing">Тарифы</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="cabinet.html">Личный кабинет</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Поддержка</h4>
-      <ul>
-        <li><a href="https://t.me/LiliumVPNBot" target="_blank">Telegram-бот</a></li>
-        <li><a href="https://t.me/adoqnc" target="_blank">Написать нам</a></li>
-        <li><a href="https://t.me/ProjectLilium" target="_blank">Канал</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Правовая информация</h4>
-      <ul>
-        <li><a href="#">Политика конфиденциальности</a></li>
-        <li><a href="#">Условия использования</a></li>
-      </ul>
-    </div>
+    <div class="footer-col"><h4>Продукт</h4><ul>
+      <li><a href="#features">Возможности</a></li>
+      <li><a href="#pricing">Тарифы</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="cabinet.html">Личный кабинет</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Поддержка</h4><ul>
+      <li><a href="https://t.me/LiliumVPNBot" target="_blank">Telegram-бот</a></li>
+      <li><a href="https://t.me/adoqnc" target="_blank">Написать нам</a></li>
+      <li><a href="https://t.me/ProjectLilium" target="_blank">Канал</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Правовая информация</h4><ul>
+      <li><a href="#">Политика конфиденциальности</a></li>
+      <li><a href="#">Условия использования</a></li>
+    </ul></div>
   </div>
   <div class="footer-bottom">
     <p>© 2026 LiliumVPN. Все права защищены.</p>
@@ -1077,64 +653,143 @@ footer {
   </div>
 </footer>
 
+</div><!-- /site-wrap -->
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
-  <div class="modal" style="position:relative">
+  <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <div class="modal-logo">LiliumVPN</div>
-    <div class="modal-sub">Регистрация через Telegram — быстро и без паролей</div>
-    <div class="modal-step">
-      <div class="modal-num">1</div>
-      <div class="modal-step-text">
-        <strong>Откройте Telegram-бот</strong>
-        Нажмите кнопку ниже — бот откроется автоматически
-      </div>
+    <div class="modal-logo-wrap">
+      <img src="logo.jpg" alt="" class="modal-logo-img">
+      <span class="modal-logo-text">LiliumVPN</span>
     </div>
-    <div class="modal-step">
-      <div class="modal-num">2</div>
-      <div class="modal-step-text">
-        <strong>Нажмите /start</strong>
-        Бот создаст ваш аккаунт и активирует пробный период
-      </div>
-    </div>
-    <div class="modal-step">
-      <div class="modal-num">3</div>
-      <div class="modal-step-text">
-        <strong>Войдите в личный кабинет</strong>
-        Используйте тот же Telegram для входа на сайте
-      </div>
-    </div>
-    <a href="https://t.me/LiliumVPNBot" target="_blank" class="modal-tg-btn">
-      ↗ Открыть бот в Telegram
-    </a>
+    <div class="modal-sub">Регистрация через Telegram — быстро, без паролей</div>
+    <div class="modal-step"><div class="modal-num">1</div><div class="modal-step-text"><strong>Откройте бот</strong>Нажмите кнопку ниже — бот откроется автоматически</div></div>
+    <div class="modal-step"><div class="modal-num">2</div><div class="modal-step-text"><strong>Нажмите /start</strong>Бот создаст аккаунт и активирует пробный период</div></div>
+    <div class="modal-step"><div class="modal-num">3</div><div class="modal-step-text"><strong>Войдите в ЛК</strong>Используйте Telegram для входа на сайте</div></div>
+    <a href="https://t.me/LiliumVPNBot" target="_blank" class="modal-tg-btn">↗ Открыть бот в Telegram</a>
   </div>
 </div>
 
 <script>
-// Nav scroll
-window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', scrollY > 40);
+// ── CANVAS PARTICLE BACKGROUND ──────────────────────────────
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+
+let W, H, particles = [], scrollY2 = 0, targetScrollY = 0, idleTimer, isScrolling = false;
+
+// Color zones per scroll position
+const zones = [
+  { stop: 0,    r:6,   g:6,   b:8   },
+  { stop: 0.2,  r:4,   g:6,   b:10  },
+  { stop: 0.4,  r:6,   g:4,   b:8   },
+  { stop: 0.6,  r:8,   g:6,   b:4   },
+  { stop: 0.8,  r:4,   g:8,   b:6   },
+  { stop: 1.0,  r:6,   g:6,   b:8   },
+];
+
+let currentBg = {r:6,g:6,b:8};
+let targetBg  = {r:6,g:6,b:8};
+
+function lerpBg(a, b, t){
+  return {r:a.r+(b.r-a.r)*t, g:a.g+(b.g-a.g)*t, b:a.b+(b.b-a.b)*t};
+}
+
+function getBgForScroll(p){
+  for(let i=0;i<zones.length-1;i++){
+    if(p>=zones[i].stop && p<=zones[i+1].stop){
+      const t=(p-zones[i].stop)/(zones[i+1].stop-zones[i].stop);
+      return lerpBg(zones[i],zones[i+1],t);
+    }
+  }
+  return zones[zones.length-1];
+}
+
+function resize(){
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+}
+
+class Particle{
+  constructor(){this.reset(true)}
+  reset(init){
+    this.x = Math.random()*W;
+    this.y = init ? Math.random()*H : H+10;
+    this.size = Math.random()*1.6+0.3;
+    this.speed = Math.random()*0.35+0.08;
+    this.opacity = Math.random()*0.25+0.03;
+    this.drift = (Math.random()-0.5)*0.15;
+    this.wobble = Math.random()*Math.PI*2;
+    this.wobbleSpeed = Math.random()*0.008+0.003;
+  }
+  update(){
+    this.y -= this.speed;
+    this.wobble += this.wobbleSpeed;
+    this.x += Math.sin(this.wobble)*0.4 + this.drift;
+    if(this.y < -10) this.reset(false);
+  }
+  draw(){
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function initParticles(){
+  particles = [];
+  for(let i=0;i<110;i++) particles.push(new Particle());
+}
+
+let animFrame;
+function animate(){
+  const bg = currentBg;
+  ctx.fillStyle = `rgb(${Math.round(bg.r)},${Math.round(bg.g)},${Math.round(bg.b)})`;
+  ctx.fillRect(0,0,W,H);
+
+  // lerp bg toward target
+  currentBg = lerpBg(currentBg, targetBg, 0.015);
+
+  particles.forEach(p=>{p.update();p.draw()});
+  animFrame = requestAnimationFrame(animate);
+}
+
+// scroll handling
+window.addEventListener('scroll',()=>{
+  scrollY2 = window.scrollY;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docH>0 ? scrollY2/docH : 0;
+  targetBg = getBgForScroll(progress);
+  isScrolling = true;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(()=>{ isScrolling=false; }, 1500);
+  document.getElementById('nav').classList.toggle('scrolled', scrollY2>40);
 });
 
-// Modal
+window.addEventListener('resize',()=>{ resize(); initParticles(); });
+resize(); initParticles(); animate();
+
+// ── MODAL ────────────────────────────────────────────────────
 function openModal(){ document.getElementById('modal').classList.add('open'); }
 function closeModal(){ document.getElementById('modal').classList.remove('open'); }
 function closeModalOutside(e){ if(e.target===document.getElementById('modal')) closeModal(); }
 
-// FAQ
+// ── FAQ ──────────────────────────────────────────────────────
 function toggleFaq(btn){
-  const item = btn.parentElement;
-  const wasOpen = item.classList.contains('open');
+  const item=btn.parentElement;
+  const wasOpen=item.classList.contains('open');
   document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
   if(!wasOpen) item.classList.add('open');
 }
 
-// Scroll reveal
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+// ── REVEAL ───────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.08,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
