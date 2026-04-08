@@ -239,8 +239,21 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:20px 4
 </div>
 
 <script>
-const BOT_USERNAME = 'LiliumVPNBot';
+const BOT_USERNAME = 'LiliumVPNbot';
+const API_URL = 'https://confirmed-dialogue-enrollment-indexed.trycloudflare.com';
 const BOT_URL = `https://t.me/${BOT_USERNAME}`;
+
+// ── API HELPERS ─────────────────────────────────────────────────
+async function apiGet(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('API error');
+    return await res.json();
+  } catch (e) {
+    console.error('API error:', e);
+    return null;
+  }
+}
 
 // ── DEMO STATE (replace with real API calls) ──────────────────
 const DEMO_USER = {
@@ -276,25 +289,32 @@ async function loginWithCode() {
   const code = document.getElementById('code-input').value.trim().toUpperCase();
   if (!code) return;
 
-  // TODO: replace with real API call to your backend
-  // Example: POST /api/auth { code: "XXXX" } → { telegram_id, username, ... }
-  
-  // DEMO: simulate login with any code
-  const demoSession = {
-    telegram_id: 1882575888,
-    username: 'adoqnc',
-    first_name: 'Mel',
-    balance: 0,
-    referral_code: 'adq',
-    ref_count: 0,
-    ref_earned: 0,
-    sub: null,
-    vpn_key: null,
-    transactions: [],
-  };
+  const btn = document.querySelector('.code-btn');
+  btn.textContent = 'Проверка...';
+  btn.disabled = true;
 
-  saveSession(demoSession);
-  showDashboard(demoSession);
+  const data = await apiGet(`${API_URL}/api/verify?code=${code}`);
+  
+  if (!data || data.error) {
+    btn.textContent = 'Войти';
+    btn.disabled = false;
+    alert(data?.error || 'Неверный или истёкший код');
+    return;
+  }
+
+  const userData = await apiGet(`${API_URL}/api/user/${data.telegram_id}`);
+  
+  if (!userData || userData.error) {
+    btn.textContent = 'Войти';
+    btn.disabled = false;
+    alert('Ошибка загрузки данных');
+    return;
+  }
+
+  saveSession(userData);
+  btn.textContent = 'Войти';
+  btn.disabled = false;
+  showDashboard(userData);
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────
